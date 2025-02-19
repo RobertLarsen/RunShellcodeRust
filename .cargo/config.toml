@@ -1,0 +1,9 @@
+[build]
+[target.armv5te-unknown-linux-gnueabi]
+rustflags = [
+    "-C", "linker=arm-linux-gnueabi-gcc"
+]
+[target.aarch64-unknown-linux-gnu]
+rustflags = [
+    "-C", "linker=aarch64-linux-gnu-gcc"
+]
