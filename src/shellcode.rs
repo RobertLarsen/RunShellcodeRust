@@ -91,8 +91,9 @@ impl Shellcode {
                 prot |= PROT_WRITE;
             }
             mprotect(map as *mut c_void, map_size, prot);
-            let shellcode_fn: extern "C" fn() -> ! = transmute(map);
+            let shellcode_fn: extern "C" fn() = transmute(map);
             shellcode_fn();
         }
+        Ok(())
     }
 }
