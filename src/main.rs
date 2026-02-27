@@ -59,7 +59,7 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
     let source = match &args.source {
-        Some(s) => ShellcodeSource::from_str(&s),
+        Some(s) => ShellcodeSource::from_str(s),
         None => Ok(ShellcodeSource::Stdin),
     };
 

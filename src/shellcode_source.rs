@@ -121,7 +121,7 @@ impl FromStr for ShellcodeSource {
             Ok(ShellcodeSource::Stdin)
         } else if let Ok(port) = s.parse::<u16>() {
             Ok(ShellcodeSource::TcpPort(port))
-        } else if let Ok(path) = PathBuf::from_str(&s) {
+        } else if let Ok(path) = PathBuf::from_str(s) {
             Ok(ShellcodeSource::File(path))
         } else {
             Err(ShellcodeError::ShellcodeSourceParseError)
