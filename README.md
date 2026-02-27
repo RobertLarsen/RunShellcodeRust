@@ -107,7 +107,7 @@ exit_group(0)                           = ?
 
 That makes it much easier to spot your shellcode execution.
 
-You can also place a breakpoint before your shellcode on certain architectures (`x86` and `x86_64`):
+You can also place a breakpoint before your shellcode on certain architectures (`x86`, `x86_64`, `arm` and `aarch64`):
 
 ```console
 $ gdb -q -iex 'set debuginfod enabled off' ./target/release/run_shellcode -ex 'r -b hello'
