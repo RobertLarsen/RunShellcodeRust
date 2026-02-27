@@ -110,10 +110,10 @@ That makes it much easier to spot your shellcode execution.
 You can also place a breakpoint before your shellcode on certain architectures (`x86` and `x86_64`):
 
 ```console
-$ gdb -q -iex 'set debuginfod enabled off' ./target/release/run_shellcode -ex 'r -b sc'
+$ gdb -q -iex 'set debuginfod enabled off' ./target/release/run_shellcode -ex 'r -b hello'
 Reading symbols from ./target/release/run_shellcode...
 (No debugging symbols found in ./target/release/run_shellcode)
-Starting program: /home/robert/code/RunShellcodeRust/target/release/run_shellcode -b sc
+Starting program: /home/robert/code/RunShellcodeRust/target/release/run_shellcode -b hello
 [Thread debugging using libthread_db enabled]
 Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 
