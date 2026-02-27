@@ -99,7 +99,13 @@ impl Shellcode {
             }
             mprotect(map as *mut c_void, map_size, prot);
             let shellcode_fn: extern "C" fn() = transmute(map);
+            if let Some(s) = &args.pre_access {
+                let _  = nix::unistd::access(&s[..], nix::unistd::AccessFlags::F_OK);
+            }
             shellcode_fn();
+            if let Some(s) = &args.post_access {
+                let _  = nix::unistd::access(s.as_str(), nix::unistd::AccessFlags::F_OK);
+            }
         }
         Ok(())
     }

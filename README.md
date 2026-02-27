@@ -24,7 +24,9 @@ Options:
   -c, --chroot <ROOT PATH>           Change root directory prior to executing the shellcode
   -w, --writable                     Mark shellcode memory as writable
   -l, --load-address <LOAD_ADDRESS>  Load shellcode at this address
-  -h, --help                         Print hel
+  -p, --pre-access <PRE_ACCESS>      Make `access` system call prior to executing shellcode
+  -o, --post-access <POST_ACCESS>    Make `access` system call after having executed shellcode
+  -h, --help                         Print help
 ```
 
 ### From a file
@@ -60,7 +62,7 @@ $ ./target/debug/run_shellcode 8899
 
 ...and in another:
 
-```
+```console
 $ ( shellcraft amd64.linux.findpeer ; shellcraft amd64.linux.dupio rdi ; shellcraft amd64.linux.echo 'Hello, World
 > ' ; shellcraft amd64.linux.exit 0 ) >findpeer
 $ nc localhost 8899 <findpeer
@@ -75,7 +77,32 @@ You can also provide the mutually exclusive `--ipv4` and `--ipv6` options to spe
 
 Executing shellcode from an untrusted source is dangerous so you can drop privileges and change root prior to executing shellcode:
 
-```
+```console
 $ mkdir empty
 $ sudo ./target/debug/run_shellcode --chroot empty --uid 1000 --gid 1000 8899
 ```
+
+### Shellcode debugging
+
+If you `strace` the `run_shellcode` process in order to debug your shellcode you might want to use the `--pre-access` and `--post-access` options
+in order to mark when your shellcode begins or ends:
+
+```console
+$ (shellcraft amd64.linux.echo 'Hello, World!
+' ; ( echo -e 'add rsp, 16\nret' | asm -c amd64 )) >hello_ret
+$ strace ./target/debug/run_shellcode --pre-access '===== Shellcode starts' --post-access '==== Shellcode ends' hello_ret
+....
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7b3ab6335000
+mprotect(0x7b3ab6335000, 4096, PROT_READ|PROT_EXEC) = 0
+access("===== Shellcode starts", F_OK)  = -1 ENOENT (No such file or directory)
+write(1, "Hello, World!\n", 14Hello, World!
+)         = 14
+access("==== Shellcode ends", F_OK)     = -1 ENOENT (No such file or directory)
+sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=8192}, NULL) = 0
+munmap(0x7b3ab6336000, 12288)           = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+```
+
+That makes it much easier to spot your shellcode execution.

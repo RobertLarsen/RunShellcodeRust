@@ -51,6 +51,12 @@ struct Args {
     /// Load shellcode at this address
     #[arg(short, long, action, value_parser = parse_hex_usize)]
     load_address: Option<usize>,
+    /// Make `access` system call prior to executing shellcode
+    #[arg(short, long, action)]
+    pre_access: Option<String>,
+    /// Make `access` system call after having executed shellcode
+    #[arg(short='o', long, action)]
+    post_access: Option<String>,
     /// Source of shellcode. Standard in if absent or the string '-', TCP port if integer, otherwise path to
     /// file.
     source: Option<String>,
