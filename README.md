@@ -143,3 +143,34 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
 ```
 
 Note that this moves your shellcode by one or more bytes bytes depending on the architecture.
+
+### Run for other architectures
+
+Arm:
+
+```console
+$ cargo build --target armv5te-unknown-linux-gnueabi
+....
+$ ( shellcraft arm.linux.echo 'Hello, World!
+' ; shellcraft arm.linux.exit 0 ) >hello.arm
+$ ./target/armv5te-unknown-linux-gnueabi/debug/run_shellcode hello.arm
+Hello, World!
+```
+
+The above assumes you have Qemu and binfmt set up correctly. You may get problems such as the one below:
+
+```console
+$ cargo build --target aarch64-unknown-linux-gnu
+...
+$ ( shellcraft aarch64.linux.echo 'Hello, World!
+' ; shellcraft aarch64.linux.exit 0 ) >hello.aarch64
+$ ./target/aarch64-unknown-linux-gnu/debug/run_shellcode hello.aarch64
+aarch64-binfmt-P: Could not open '/lib/ld-linux-aarch64.so.1': No such file or directory
+```
+
+...which can be fixed usine the `QEMU_LD_PREFIX` environment variable:
+
+```console
+$ QEMU_LD_PREFIX=/usr/aarch64-linux-gnu ./target/aarch64-unknown-linux-gnu/debug/run_shellcode hello.aarch64
+Hello, World!
+```
