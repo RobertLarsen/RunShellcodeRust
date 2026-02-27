@@ -29,6 +29,7 @@ pub enum ShellcodeContext {
     /// If shellcode does not need anything
     Nothing,
     /// We want to keep the source network connection alive
+    #[allow(dead_code)]
     NetworkSocket(TcpStream),
 }
 
