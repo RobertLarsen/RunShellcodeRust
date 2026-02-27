@@ -57,6 +57,10 @@ struct Args {
     /// Make `access` system call after having executed shellcode
     #[arg(short='o', long, action)]
     post_access: Option<String>,
+    #[cfg(any(target_arch="x86", target_arch="x86_64"))]
+    /// Prepend a breakpoint instruction to the shellcode
+    #[arg(short='b', long, action)]
+    prepend_breakpoint: bool,
     /// Source of shellcode. Standard in if absent or the string '-', TCP port if integer, otherwise path to
     /// file.
     source: Option<String>,

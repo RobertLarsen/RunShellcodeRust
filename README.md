@@ -106,3 +106,39 @@ exit_group(0)                           = ?
 ```
 
 That makes it much easier to spot your shellcode execution.
+
+You can also place a breakpoint before your shellcode on certain architectures (`x86` and `x86_64`):
+
+```console
+$ gdb -q -iex 'set debuginfod enabled off' ./target/release/run_shellcode -ex 'r -b sc'
+Reading symbols from ./target/release/run_shellcode...
+(No debugging symbols found in ./target/release/run_shellcode)
+Starting program: /home/robert/code/RunShellcodeRust/target/release/run_shellcode -b sc
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGTRAP, Trace/breakpoint trap.
+0x00007ffff7fb7001 in ?? ()
+(gdb) x/18i $rip
+=> 0x7ffff7fb7001:      movabs rax,0x101010101010101
+   0x7ffff7fb700b:      push   rax
+   0x7ffff7fb700c:      movabs rax,0x1010b20656d736e
+   0x7ffff7fb7016:      xor    QWORD PTR [rsp],rax
+   0x7ffff7fb701a:      movabs rax,0x57202c6f6c6c6548
+   0x7ffff7fb7024:      push   rax
+   0x7ffff7fb7025:      push   0x1
+   0x7ffff7fb7027:      pop    rax
+   0x7ffff7fb7028:      push   0x1
+   0x7ffff7fb702a:      pop    rdi
+   0x7ffff7fb702b:      push   0xe
+   0x7ffff7fb702d:      pop    rdx
+   0x7ffff7fb702e:      mov    rsi,rsp
+   0x7ffff7fb7031:      syscall
+   0x7ffff7fb7033:      xor    edi,edi
+   0x7ffff7fb7035:      push   0x3c
+   0x7ffff7fb7037:      pop    rax
+   0x7ffff7fb7038:      syscall
+(gdb)
+```
+
+Note that this moves your shellcode by one byte.

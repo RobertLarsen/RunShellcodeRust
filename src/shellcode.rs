@@ -74,12 +74,22 @@ impl Shellcode {
                 }
             }
 
+            #[cfg(any(target_arch="x86", target_arch="x86_64"))]
+            let opcodes = if args.prepend_breakpoint {
+                let breakpoint = [0xcc];
+                &[&breakpoint[..], &self.opcodes[..]].concat()
+            } else {
+                &self.opcodes
+            };
+            #[cfg(not(any(target_arch="x86", target_arch="x86_64")))]
+            let opcodes = &self.opcodes;
+
             let (addr, flags) = if let Some(addr) = args.load_address {
                 (addr as *mut c_void, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED)
             } else {
                 (std::ptr::null_mut::<c_void>(), MAP_PRIVATE | MAP_ANONYMOUS)
             };
-            let map_size = (self.opcodes.len() + 4096) & !4095;
+            let map_size = (opcodes.len() + 4096) & !4095;
             let map = mmap(addr, // Address
                        map_size, // Size
                        PROT_READ | PROT_WRITE, // Protection
@@ -92,7 +102,7 @@ impl Shellcode {
                 return Err(ShellcodeError::MemoryMappingFailed.into());
             }
 
-            std::ptr::copy(self.opcodes.as_ptr(), map, self.opcodes.len());
+            std::ptr::copy(opcodes.as_ptr(), map, opcodes.len());
             let mut prot = PROT_READ | PROT_EXEC;
             if args.writable {
                 prot |= PROT_WRITE;
