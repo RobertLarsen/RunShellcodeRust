@@ -23,6 +23,13 @@ use std::{
 use crate::{Args, ShellcodeError};
 use anyhow::Result;
 
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+const INS_TRAP: [u8; 1] = [0xcc];
+#[cfg(target_arch = "aarch64")]
+const INS_TRAP: [u8; 4] = [0x00, 0x00, 0x20, 0xd4];
+#[cfg(target_arch = "arm")]
+const INS_TRAP: [u8; 4] = [0xf0, 0x01, 0xf0, 0xe7];
+
 /// Things needed for shellcode execution.
 /// This should contain things that Rust would otherwise free before the
 /// shellcode runs such as TCP network streams.
@@ -74,14 +81,13 @@ impl Shellcode {
                 }
             }
 
-            #[cfg(any(target_arch="x86", target_arch="x86_64"))]
+            #[cfg(any(target_arch="x86", target_arch="x86_64", target_arch="aarch64", target_arch="arm"))]
             let opcodes = if args.prepend_breakpoint {
-                let breakpoint = [0xcc];
-                &[&breakpoint[..], &self.opcodes[..]].concat()
+                &[&INS_TRAP[..], &self.opcodes[..]].concat()
             } else {
                 &self.opcodes
             };
-            #[cfg(not(any(target_arch="x86", target_arch="x86_64")))]
+            #[cfg(not(any(target_arch="x86", target_arch="x86_64", target_arch="aarch64", target_arch="arm")))]
             let opcodes = &self.opcodes;
 
             let (addr, flags) = if let Some(addr) = args.load_address {

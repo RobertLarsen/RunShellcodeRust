@@ -141,4 +141,4 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
 (gdb)
 ```
 
-Note that this moves your shellcode by one byte.
+Note that this moves your shellcode by one or more bytes bytes depending on the architecture.
