@@ -26,6 +26,7 @@ Options:
   -l, --load-address <LOAD_ADDRESS>  Load shellcode at this address
   -p, --pre-access <PRE_ACCESS>      Make `access` system call prior to executing shellcode
   -o, --post-access <POST_ACCESS>    Make `access` system call after having executed shellcode
+  -b, --prepend-breakpoint           Prepend a breakpoint instruction to the shellcode
   -h, --help                         Print help
 ```
 
