@@ -18,6 +18,7 @@ pub enum ShellcodeError {
     SetUidFailed,
     /// Could not set group id
     SetGidFailed,
+    LoadAddressParseError,
 }
 
 impl ShellcodeError {
@@ -28,6 +29,7 @@ impl ShellcodeError {
             ShellcodeError::ChrootFailed => "Changing root failed",
             ShellcodeError::SetUidFailed => "Setting UID failed",
             ShellcodeError::SetGidFailed => "Setting GID failed",
+            ShellcodeError::LoadAddressParseError => "Could not parse load address",
         }
     }
 }

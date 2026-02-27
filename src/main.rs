@@ -13,6 +13,14 @@ use shellcode_source::ShellcodeSource;
 mod shellcode;
 use shellcode::{Shellcode, ShellcodeContext};
 
+fn parse_hex_usize(s: &str) -> Result<usize> {
+    Ok((if let Some(sub) = s.strip_prefix("0x") {
+        usize::from_str_radix(sub, 16)
+    } else {
+        usize::from_str(s)
+    }).map_err(|_| ShellcodeError::LoadAddressParseError)?)
+}
+
 /// Run shellcode from standard in, a TCP server or from a file
 #[derive(Parser,Debug)]
 struct Args {
@@ -40,6 +48,9 @@ struct Args {
     /// Mark shellcode memory as writable
     #[arg(short, long, action)]
     writable: bool,
+    /// Load shellcode at this address
+    #[arg(short, long, action, value_parser = parse_hex_usize)]
+    load_address: Option<usize>,
     /// Source of shellcode. Standard in if absent or the string '-', TCP port if integer, otherwise path to
     /// file.
     source: Option<String>,

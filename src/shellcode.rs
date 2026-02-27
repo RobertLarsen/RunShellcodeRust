@@ -13,6 +13,7 @@ use libc::{
     PROT_EXEC,
     MAP_ANONYMOUS,
     MAP_PRIVATE,
+    MAP_FIXED,
     MAP_FAILED,
 };
 use std::{
@@ -73,11 +74,16 @@ impl Shellcode {
                 }
             }
 
+            let (addr, flags) = if let Some(addr) = args.load_address {
+                (addr as *mut c_void, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED)
+            } else {
+                (std::ptr::null_mut::<c_void>(), MAP_PRIVATE | MAP_ANONYMOUS)
+            };
             let map_size = (self.opcodes.len() + 4096) & !4095;
-            let map = mmap(0 as *mut c_void, // Address
+            let map = mmap(addr, // Address
                        map_size, // Size
                        PROT_READ | PROT_WRITE, // Protection
-                       MAP_PRIVATE | MAP_ANONYMOUS, // Flags
+                       flags, // Flags
                        -1, // FD
                         0 // Offset
                        ) as *mut u8;
