@@ -174,3 +174,11 @@ aarch64-binfmt-P: Could not open '/lib/ld-linux-aarch64.so.1': No such file or d
 $ QEMU_LD_PREFIX=/usr/aarch64-linux-gnu ./target/aarch64-unknown-linux-gnu/debug/run_shellcode hello.aarch64
 Hello, World!
 ```
+
+MIPS/MIPSEL:
+```console
+$ cargo +nightly build --release -Z build-std=std,panic_abort --target mipsel-unknown-linux-gnu
+...
+QEMU_LD_PREFIX=/usr/mipsel-linux-gnu ./target/mipsel-unknown-linux-gnu/release/run_shellcode --help
+...
+```
